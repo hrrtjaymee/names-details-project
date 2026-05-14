@@ -10,6 +10,7 @@ DATA_PATH = os.path.join(os.path.dirname(__file__), '../data/raw')
 BATCH_SIZE = 100
 
 def extract():
+    logger.info(f'Extracting files in the filepath')
     files = []
 
     #getting all the extractable files in the folder
@@ -19,8 +20,10 @@ def extract():
 
     ##check if data list is empty
     if not files:
+        logger.error(f'No file found for extraction in {DATA_PATH}')
         raise FileNotFoundError(f'No file found for extraction in {DATA_PATH}')
     
+    logger.info(f'Finished all file extraction: {len(files)} files')
     return files
 
 def extract_rows(filepath: str, filename: str) -> tuple[pd.DataFrame, int]:
