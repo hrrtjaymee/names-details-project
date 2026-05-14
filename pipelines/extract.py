@@ -27,6 +27,8 @@ def extract():
     return files
 
 def extract_rows(filename: str) -> tuple[pd.DataFrame, int]:
+    logger.info(f'Extracting rows from file: {filename}')
+    
     filepath = f'{DATA_PATH}/{filename}'
     file_data = None
     
@@ -43,9 +45,11 @@ def extract_rows(filename: str) -> tuple[pd.DataFrame, int]:
     if header_check == ['name', 'gender', 'count']:
         file_data = pd.read_csv(filepath, header=0)
     else:
+        logger.warning(f'File {filename} has no headers')
         file_data = pd.read_csv(filepath, header=None, names=['name', 'gender', 'count'])
     
     ##retreiving year
     year = int(filename.replace('.txt', '')[-4:])
 
+    logger.info(f'Finished extracting all {len(file_data)} rows from {filename}')
     return file_data, year
