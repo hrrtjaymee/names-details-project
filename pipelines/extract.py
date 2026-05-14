@@ -26,16 +26,26 @@ def extract():
     logger.info(f'Finished all file extraction: {len(files)} files')
     return files
 
-def extract_rows(filepath: str, filename: str) -> tuple[pd.DataFrame, int]:
-    file_data = pd.read_csv(filepath, header=1)
+def extract_rows(filename: str) -> tuple[pd.DataFrame, int]:
+    filepath = f'{DATA_PATH}/{filename}'
+    file_data = None
+    
+    check = pd.read_csv(filepath, header=None, nrows=1)
 
-    if file_data.columns is not ['name', 'year', 'count']:
-        file_data = pd.read_csv(filepath, header=None, names=['name', 'year', 'count'])
+    #checking for empty file
+    if check.empty:
+        logger.warning(f'{filename} is empty, skipping')
+        return pd.DataFrame(columns=['name', 'gender', 'count']), year
+    
+    #checking the first row for headers
+    header_check = check.iloc[0].to_list()
+    
+    if header_check == ['name', 'gender', 'count']:
+        file_data = pd.read_csv(filepath, header=0)
+    else:
+        file_data = pd.read_csv(filepath, header=None, names=['name', 'gender', 'count'])
+    
+    ##retreiving year
+    year = int(filename.replace('.txt', '')[-4:])
 
-        #todo: make loop logic for checking the header, if unable to get the header, mark it in the logger
-
-    year = int(filename[-4:])
-
-    return (file_data, year)
-
-print(extract())
+    return file_data, year
