@@ -37,7 +37,7 @@ def extract_rows(filename: str) -> tuple[pd.DataFrame, int]:
     #checking for empty file
     if check.empty:
         logger.warning(f'{filename} is empty, skipping')
-        return pd.DataFrame(columns=['name', 'gender', 'count']), year
+        return pd.DataFrame(columns=['name', 'gender', 'count']), 0
     
     #checking the first row for headers
     header_check = check.iloc[0].to_list()

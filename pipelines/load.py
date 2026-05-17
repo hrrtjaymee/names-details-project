@@ -12,7 +12,7 @@ def load(cleaned: pd.DataFrame, conn: Connection, year: int):
         for _, row in cleaned.iterrows():
             try:
                 row_id = load_names(row[['name', 'gender']], cur)
-                load_details((row_id, row['count']), cur, year)
+                load_details(row_id, row['count'], cur, year)
             except Exception as e:
                 logger.warning(f'Skipping row {row['name']}: {e}')
                 failed_rows += 1
@@ -52,5 +52,12 @@ def load_names(names_content: pd.DataFrame, cur: Cursor) -> tuple[int]:
 
     return result
 
-def load_details(details_content: tuple[int, int], cur: Cursor, year: int):
+def load_details(name_id: int, count: int, cur: Cursor, year: int):
+    LOAD_QUERY = '''
+        INSERT INTO DETAILS
+        (name_id, year, count)
+        VALUES (%s, %s, %s)
+        ON CONFLICT ()
+    '''
+    cur.execute(LOAD_QUERY, (name_id, year, count))
     return
