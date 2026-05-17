@@ -43,10 +43,13 @@ def main():
                     start = end
                     end += BATCH_SIZE
             else:
-                logger.info(f'Processing all records')
-                transformed = transform(data_records.iloc[start:end])
-                load(transformed, connection)
-            
+                try:
+                    logger.info(f'Processing all records')
+                    transformed = transform(data_records.iloc[start:end])
+                    load(transformed, connection)
+                except Exception as e:
+                    logger.warning(f'Failed to load batch {BATCH_NUM} from {file}, skipping')
+                    continue
         except Exception as e:
             logger.error(f'Failed to process file {file}')
             continue
