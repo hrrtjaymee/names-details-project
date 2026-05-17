@@ -9,8 +9,11 @@ def transform(data_records: pd.DataFrame) -> tuple[pd.DataFrame]:
    logger.info(f'Transforming batch')
    
    data_records = data_records.apply(checking_gender, axis=1).dropna().reset_index(drop=True)
-   data_records = data_records.apply(checking_count, axis=1).dropna().reset_index(drop=True)
-   #Todo: use vectorized pandas operations for cleaning instead
+   try:
+      data_records['count'] = data_records['count'].astype(int)
+   except ValueError as e:
+      logger.warning(f'Batch contains invalid count value: {e}')
+      data_records = data_records.apply(checking_count, axis=1).dropna().reset_index(drop=True)
    
    data_records['name'] = data_records['name'].str.capitalize()
 
