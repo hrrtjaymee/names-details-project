@@ -19,9 +19,9 @@ def test_names_capitalized(sample_data):
     assert records['names'].str.istitle().all()
 
 def test_count_validity(sample_data):
-    #todo: check for negative values
     records = transform(sample_data)
     assert records['count'].dtype == int
+    assert records['count'] >= 0
 
 def test_names_are_unique(sample_data):
     records = transform(sample_data)

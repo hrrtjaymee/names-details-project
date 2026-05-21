@@ -40,4 +40,7 @@ def checking_count(record):
       logger.warning(f'Invalid count value found for {record['name']}: {e}')
       record['count'] = pd.NA
 
+   if record['count'] < 0:
+      logger.warning(f'Negative number for count is invalid')
+      record['count'] = pd.NA
    return record
