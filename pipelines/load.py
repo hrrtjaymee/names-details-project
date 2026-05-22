@@ -52,12 +52,14 @@ def load_names(names_content: pd.DataFrame, cur: Cursor) -> tuple[int]:
 
     return result
 
-def load_details(name_id: int, count: int, cur: Cursor, year: int):
+def load_details(name_id: str, count: int, cur: Cursor, year: int):
     LOAD_QUERY = '''
         INSERT INTO DETAILS
         (name_id, year, count)
         VALUES (%s, %s, %s)
-        ON CONFLICT ()
+        ON CONFLICT (name_id, year) DO UPDATE SET
+            count = EXCLUDED.count
+            updated_at = NOW()
     '''
     cur.execute(LOAD_QUERY, (name_id, year, count))
     return
