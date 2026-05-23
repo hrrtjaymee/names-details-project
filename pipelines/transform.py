@@ -17,10 +17,10 @@ def transform(data_records: pd.DataFrame) -> tuple[pd.DataFrame]:
    
    data_records['name'] = data_records['name'].str.capitalize()
 
-   names_table = data_records[['name', 'gender']].drop_duplicates(subset=['name', 'gender']).reset_index(drop=True)
+   data_records = data_records.drop_duplicates(subset=['name', 'gender']).reset_index(drop=True)
 
    logger.info(f'Finished transforming batch')
-   return names_table
+   return data_records
 
 def checking_gender(record):
    if record['gender'].lower() in ['f', 'female']:
