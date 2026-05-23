@@ -31,7 +31,7 @@ def load(cleaned: pd.DataFrame, conn: Connection, year: int):
 def load_names(names_content: pd.DataFrame, cur: Cursor) -> tuple[int]:
     result = None
     LOAD_QUERY = '''
-        INSERT INTO NAMES
+        INSERT INTO public."NAMES"
         (name, gender)
         VALUES (%s, %s)
         ON CONFLICT (name, gender) DO NOTHING
@@ -39,7 +39,7 @@ def load_names(names_content: pd.DataFrame, cur: Cursor) -> tuple[int]:
     '''
 
     GET_ID_QUERY = '''
-    SELECT name_id FROM NAMES
+    SELECT name_id FROM public."NAMES"
     WHERE name = %s AND gender = %s
     '''
     cur.execute(LOAD_QUERY, (names_content['name'], names_content['gender']))
@@ -54,11 +54,11 @@ def load_names(names_content: pd.DataFrame, cur: Cursor) -> tuple[int]:
 
 def load_details(name_id: str, count: int, cur: Cursor, year: int):
     LOAD_QUERY = '''
-        INSERT INTO DETAILS
+        INSERT INTO public."DETAILS"
         (name_id, year, count)
         VALUES (%s, %s, %s)
         ON CONFLICT (name_id, year) DO UPDATE SET
-            count = EXCLUDED.count
+            count = EXCLUDED.count,
             updated_at = NOW()
     '''
     cur.execute(LOAD_QUERY, (name_id, year, count))
