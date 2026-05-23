@@ -31,25 +31,29 @@ def extract_rows(filename: str) -> tuple[pd.DataFrame, int]:
     
     filepath = f'{DATA_PATH}/{filename}'
     file_data = None
-    
-    check = pd.read_csv(filepath, header=None, nrows=1)
+    empty_result = (pd.DataFrame(columns=['name', 'gender', 'count']), 0)
 
-    #checking for empty file
-    if check.empty:
-        logger.warning(f'{filename} is empty, skipping')
-        return pd.DataFrame(columns=['name', 'gender', 'count']), 0
+    try:
+        check = pd.read_csv(filepath, header=None)
+    except pd.errors.EmptyDataError as e:
+        logger.warning(f'File contains no headers nor data, skipping')
+        return empty_result
     
     #checking the first row for headers
     header_check = check.iloc[0].to_list()
     
     if header_check == ['name', 'gender', 'count']:
         file_data = pd.read_csv(filepath, header=0)
+        if file_data.empty:
+            logger.warning(f'{filename} has headers but no data, skipping')
+            return empty_result
     else:
         logger.warning(f'File {filename} has no headers')
         file_data = pd.read_csv(filepath, header=None, names=['name', 'gender', 'count'])
+
     
     ##retreiving year
     year = int(filename.replace('.txt', '')[-4:])
-
     logger.info(f'Finished extracting all {len(file_data)} rows from {filename}')
+    
     return file_data, year
